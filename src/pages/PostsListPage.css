@@ -1,0 +1,26 @@
+/* src/pages/PostsListPage.css */
+.posts-list-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  li {
+    margin-bottom: 10px;
+  }
+  
+  li a {
+    text-decoration: none;
+    color: #0056b3;
+    font-size: 18px;
+  }
+  
+  li a:hover {
+    text-decoration: underline;
+  }
+  

@@ -1,0 +1,38 @@
+/* 기본 글씨 색상 설정 */
+body {
+    color: #0056b3; /* 텍스트 색상 */
+    font-family: Arial, sans-serif;
+  }
+  
+  /* 링크 색상 설정 */
+  a {
+    color: #0056b3; /* 링크 색상 */
+    text-decoration: none;
+  }
+  
+  a:hover {
+    color: #003d80; /* 마우스 올렸을 때 색상 */
+  }
+  
+  /* 버튼 및 클릭 가능한 요소의 기본 설정 */
+  button, .header-button {
+    background-color: #0056b3; /* 배경색 */
+    color: white; /* 텍스트 색상 */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  button:hover, .header-button:hover {
+    background-color: #003d80; /* 마우스 올렸을 때 배경색 */
+  }
+  
+  /* 박스 요소 (예시로 컨테이너 적용) */
+  .container {
+    background-color: #f0f4ff; /* 박스 안의 기본 배경색 */
+    box-shadow: 0 4px 8px rgba(0, 86, 179, 0.2); /* 마우스 hover 시 어울리는 색상 */
+    border-radius: 8px;
+  }
+  
