@@ -1,34 +1,63 @@
-import React, { useEffect, useState } from 'react';
-import { auth } from '../firebase'; // Firebase 인증 가져오기
-import { useNavigate } from 'react-router-dom';
-import './ChatPage.css'; // 페이지 별도 스타일 적용
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { db, auth } from '../firebase';
+import { collection, addDoc, query, where, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import './ChatPage.css';
 
 function ChatPage() {
-  const [user, setUser] = useState(null); // 사용자 상태 저장
-  const navigate = useNavigate();
+  const { chatId } = useParams(); // URL에서 chatId를 가져옴
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const currentUser = auth.currentUser;
 
-  // 사용자가 로그인되었는지 확인
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user); // 로그인된 사용자 정보를 상태로 설정
-      } else {
-        navigate('/login'); // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
-      }
+    if (!currentUser) return;
+
+    // 특정 chatId의 메시지를 가져오기 위한 쿼리 설정
+    const messagesRef = collection(db, 'chats', chatId, 'messages');
+    const q = query(messagesRef, where("timestamp", ">=", 0));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const chatMessages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setMessages(chatMessages);
     });
 
-    return () => unsubscribe(); // 컴포넌트 언마운트 시 이벤트 리스너 해제
-  }, [navigate]);
+    return () => unsubscribe();
+  }, [chatId, currentUser]);
 
-  if (!user) {
-    return <p>로딩 중...</p>; // 인증 확인 중일 때 로딩 메시지
-  }
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+
+    const messagesRef = collection(db, 'chats', chatId, 'messages');
+    await addDoc(messagesRef, {
+      senderId: currentUser.uid,
+      text: newMessage,
+      timestamp: serverTimestamp(),
+    });
+
+    setNewMessage('');
+  };
 
   return (
-    <div className="chat-container">
-      <h1>채팅</h1>
-      <p>채팅 기능은 로그인한 사용자만 접근할 수 있습니다.</p>
-      {/* 채팅 내용 추가 */}
+    <div className="chat-page-container">
+      <h2>채팅</h2>
+      <div className="messages-list">
+        {messages.map((message) => (
+          <div key={message.id} className={`message ${message.senderId === currentUser.uid ? 'sent' : 'received'}`}>
+            <p>{message.text}</p>
+          </div>
+        ))}
+      </div>
+      <form onSubmit={handleSendMessage} className="message-form">
+        <input
+          type="text"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          placeholder="메시지를 입력하세요"
+        />
+        <button type="submit">보내기</button>
+      </form>
     </div>
   );
 }

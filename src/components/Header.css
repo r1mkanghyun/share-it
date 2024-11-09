@@ -1,56 +1,55 @@
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #ddd;
-    height: 80px; /* Header의 높이 설정 */
-  }
-  
-  .header-left {
-    font-size: 20px;
-    height: 100%; /* 전체 높이에 맞추기 */
-    display: flex;
-    align-items: center; /* 위아래 중앙 정렬 */
-  }
-  
-  .header-logo {
-    color: #0056b3;
-    text-decoration: none;
-    font-size: 24px; /* 로고 크기 조정 */
-  }
-  
-  .header-right {
-    display: flex;
-    align-items: center; /* 아이콘과 버튼 위아래 중앙 정렬 */
-    justify-content: flex-end;
-  }
-  
-  .header-item {
-    margin-left: 20px;
-    color: #0056b3;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    height: 100%;
-  }
-  
-  .icon {
-    color: #0056b3;
-    cursor: pointer;
-    margin-right: 20px;
-  }
-  
-  .icon:hover {
-    color: #004080;
-  }
-  
-  .user-icon {
-    font-size: 40px; /* 사용자 아이콘 크기 조정 */
-  }
-  
-  .logout-icon, .write-icon {
-    font-size: 28px; /* 글쓰기, 로그아웃 아이콘 크기 조정 */
-  }
-  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+  height: 80px;
+}
+
+.header-left {
+  font-size: 20px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.header-logo {
+  color: #0056b3;
+  text-decoration: none;
+  font-size: 24px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.header-item {
+  margin-left: 20px;
+  color: #0056b3;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.icon {
+  color: #0056b3;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.icon:hover {
+  color: #004080;
+}
+
+.user-icon {
+  font-size: 40px;
+}
+
+.logout-icon, .write-icon, .chat-icon {
+  font-size: 28px;
+}

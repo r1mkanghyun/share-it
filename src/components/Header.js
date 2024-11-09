@@ -2,27 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth } from '../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { FaUserCircle, FaEdit, FaSignOutAlt } from 'react-icons/fa'; // 사용자, 글쓰기, 로그아웃 아이콘 추가
-import './Header.css'; // 스타일 적용
+import { FaUserCircle, FaEdit, FaSignOutAlt, FaComments } from 'react-icons/fa'; // 채팅 아이콘 추가
+import './Header.css';
 
 function Header() {
-  const [user, setUser] = useState(null); // 로그인된 사용자 상태 관리
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser); // 사용자가 로그인되어 있으면 상태에 저장
+      setUser(currentUser);
     });
 
-    return () => {
-      unsubscribe(); // 컴포넌트 언마운트 시 구독 해제
-    };
+    return () => unsubscribe();
   }, []);
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      navigate('/login'); // 로그아웃 후 로그인 페이지로 이동
+      navigate('/login');
     } catch (error) {
       console.error('로그아웃 에러:', error);
     }
@@ -37,13 +35,14 @@ function Header() {
       </div>
 
       <div className="header-right">
-        {user ? ( // 사용자가 로그인된 경우
+        {user ? (
           <>
-            <FaEdit size={24} className="icon write-icon" onClick={() => navigate('/write')} /> {/* 글쓰기 아이콘 */}
-            <FaUserCircle size={24} className="icon user-icon" onClick={() => navigate('/userinfo')} /> {/* 사용자 아이콘 */}
-            <FaSignOutAlt size={24} className="icon logout-icon" onClick={handleLogout} /> {/* 로그아웃 아이콘 */}
+            <FaEdit size={24} className="icon write-icon" onClick={() => navigate('/write')} />
+            <FaComments size={24} className="icon chat-icon" onClick={() => navigate('/chatlist')} /> {/* 채팅 아이콘 */}
+            <FaUserCircle size={24} className="icon user-icon" onClick={() => navigate('/user-info')} />
+            <FaSignOutAlt size={24} className="icon logout-icon" onClick={handleLogout} />
           </>
-        ) : ( // 사용자가 로그인되지 않은 경우
+        ) : (
           <>
             <Link to="/login" className="header-item">
               로그인

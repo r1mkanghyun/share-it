@@ -3,6 +3,7 @@ import { ref, push } from 'firebase/database';
 import { database } from '../firebase'; // db 대신 database로 변경
 import './PostPage.css';
 
+
 const PostPage = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
