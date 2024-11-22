@@ -1,74 +1,63 @@
-import React, { useState, useEffect } from 'react';
-import { auth, database } from '../firebase';
-import { ref, onValue, off } from 'firebase/database';
-import { useNavigate } from 'react-router-dom';
-import { FaUserCircle } from 'react-icons/fa'; // 사용자 아이콘 추가
-import './UserInfoPage.css';
+import React, { useState, useEffect } from "react";
+import { auth, database } from "../firebase";
+import { ref, get, query, orderByChild, equalTo } from "firebase/database";
+import { FaUserCircle } from "react-icons/fa";
+import "./UserInfoPage.css";
 
 const UserInfoPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserData = () => {
+    const fetchUserData = async () => {
       const user = auth.currentUser;
+
       if (!user) {
         console.log("로그인되지 않은 사용자입니다.");
-        navigate('/login');
         return;
       }
 
-      console.log("현재 로그인된 사용자 UID:", user.uid);
-
       // 사용자 정보 가져오기
       const userRef = ref(database, `users/${user.uid}`);
-      const unsubscribeUserInfo = onValue(
-        userRef,
-        (snapshot) => {
-          if (snapshot.exists()) {
-            console.log("가져온 사용자 데이터:", snapshot.val());
-            setUserInfo(snapshot.val());
-          } else {
-            console.error("사용자 정보를 찾을 수 없습니다.");
-            setUserInfo(null);
-          }
-        },
-        (error) => {
-          console.error("사용자 정보 가져오기 중 오류:", error);
+      try {
+        const userSnapshot = await get(userRef);
+        if (userSnapshot.exists()) {
+          console.log("사용자 정보:", userSnapshot.val());
+          setUserInfo(userSnapshot.val());
+        } else {
+          console.error("사용자 정보를 찾을 수 없습니다.");
         }
-      );
+      } catch (error) {
+        console.error("사용자 정보 가져오기 중 오류:", error);
+      }
 
-      // 사용자가 작성한 게시글 가져오기
-      const postsRef = ref(database, 'posts');
-      const unsubscribeUserPosts = onValue(
-        postsRef,
-        (snapshot) => {
+      // 게시글 가져오기
+      const postsRef = query(ref(database, "posts"), orderByChild("userId"));
+      try {
+        const postsSnapshot = await get(postsRef);
+        if (postsSnapshot.exists()) {
           const postsData = [];
-          snapshot.forEach((childSnapshot) => {
+          postsSnapshot.forEach((childSnapshot) => {
             const post = childSnapshot.val();
+            console.log("데이터 확인:", post); // 게시글 데이터 디버깅
             if (post.userId === user.uid) {
               postsData.push({ id: childSnapshot.key, ...post });
             }
           });
           setUserPosts(postsData);
-          setLoading(false);
-        },
-        (error) => {
-          console.error("게시글 가져오기 중 오류:", error);
+        } else {
+          console.log("게시글이 없습니다.");
         }
-      );
-
-      // 컴포넌트 언마운트 시 이벤트 리스너 해제
-      return () => {
-        off(userRef, 'value', unsubscribeUserInfo);
-        off(postsRef, 'value', unsubscribeUserPosts);
-      };
+      } catch (error) {
+        console.error("게시글 가져오기 중 오류:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchUserData();
-  }, [navigate]);
+  }, []);
 
   if (loading) {
     return <p>회원 정보를 불러오는 중입니다...</p>;
@@ -80,7 +69,7 @@ const UserInfoPage = () => {
         <>
           <div className="user-card">
             <div className="user-profile">
-              <FaUserCircle size={80} className="user-avatar-icon" /> {/* 프로필 아이콘으로 대체 */}
+              <FaUserCircle size={80} className="user-avatar-icon" />
               <h1>{userInfo.name || "이름 없음"}</h1>
               <p>이메일: {userInfo.email || "이메일 없음"}</p>
               <p>휴대폰 번호: {userInfo.phoneNumber || "전화번호 없음"}</p>
@@ -95,9 +84,6 @@ const UserInfoPage = () => {
                 userPosts.map((post) => (
                   <div key={post.id} className="user-post-item">
                     <h3>{post.title}</h3>
-                    {post.imageBase64 && (
-                      <img src={post.imageBase64} alt="물품 이미지" className="user-post-image" />
-                    )}
                     <p>{post.content.slice(0, 100)}...</p>
                   </div>
                 ))
@@ -108,7 +94,7 @@ const UserInfoPage = () => {
           </div>
         </>
       ) : (
-        <p>회원 정보가 없습니다. Realtime Database에 사용자 정보를 추가해주세요.</p>
+        <p>회원 정보가 없습니다.</p>
       )}
     </div>
   );

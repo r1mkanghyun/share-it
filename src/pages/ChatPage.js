@@ -1,29 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { collection, addDoc, doc, setDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { db, auth } from '../firebase';
-import { collection, addDoc, query, where, onSnapshot, serverTimestamp } from 'firebase/firestore';
-import './ChatPage.css';
 
-function ChatPage() {
-  const { chatId } = useParams(); // URL에서 chatId를 가져옴
+const ChatPage = ({ chatId, otherUserId, otherUserName }) => {
+  const currentUser = auth.currentUser;
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const currentUser = auth.currentUser;
 
   useEffect(() => {
-    if (!currentUser) return;
-
-    // 특정 chatId의 메시지를 가져오기 위한 쿼리 설정
     const messagesRef = collection(db, 'chats', chatId, 'messages');
-    const q = query(messagesRef, where("timestamp", ">=", 0));
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const chatMessages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const unsubscribe = onSnapshot(messagesRef, (snapshot) => {
+      const chatMessages = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setMessages(chatMessages);
     });
 
     return () => unsubscribe();
-  }, [chatId, currentUser]);
+  }, [chatId]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -36,20 +28,29 @@ function ChatPage() {
       timestamp: serverTimestamp(),
     });
 
+    const chatRef = doc(db, 'chats', chatId);
+    await setDoc(chatRef, {
+      participants: [currentUser.uid, otherUserId], // 반드시 participants 추가
+      user1: currentUser.uid,
+      user1Name: currentUser.displayName,
+      user2: otherUserId,
+      user2Name: otherUserName,
+    }, { merge: true });
+
     setNewMessage('');
   };
 
   return (
-    <div className="chat-page-container">
-      <h2>채팅</h2>
-      <div className="messages-list">
-        {messages.map((message) => (
-          <div key={message.id} className={`message ${message.senderId === currentUser.uid ? 'sent' : 'received'}`}>
-            <p>{message.text}</p>
+    <div>
+      <h1>Chat with {otherUserName}</h1>
+      <div>
+        {messages.map((msg) => (
+          <div key={msg.id}>
+            <strong>{msg.senderId === currentUser.uid ? 'You' : otherUserName}</strong>: {msg.text}
           </div>
         ))}
       </div>
-      <form onSubmit={handleSendMessage} className="message-form">
+      <form onSubmit={handleSendMessage}>
         <input
           type="text"
           value={newMessage}
@@ -60,6 +61,6 @@ function ChatPage() {
       </form>
     </div>
   );
-}
+};
 
 export default ChatPage;
