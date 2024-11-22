@@ -1,24 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './HomePage.css';
 
-function HomePage() {
-  const [posts, setPosts] = useState([]);
+function HomePage({ posts }) {
   const [searchQuery, setSearchQuery] = useState('');
-
-  useEffect(() => {
-    const postsRef = collection(db, 'posts');
-    const q = query(postsRef, orderBy('createdAt', 'desc'));
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const postData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setPosts(postData);
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   const filteredPosts = posts.filter((post) =>
     post.title.toLowerCase().includes(searchQuery.toLowerCase())

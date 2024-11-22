@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from "react";
-import { auth, database } from "../firebase";
-import { ref, query, orderByChild, equalTo, get } from "firebase/database";
-import { FaUserCircle } from "react-icons/fa"; // 사용자 아이콘
-import "./UserInfoPage.css";
-
-const UserInfoPage = () => {
-  const [userInfo, setUserInfo] = useState(null); // 사용자 정보 상태
-  const [userPosts, setUserPosts] = useState([]); // 게시글 상태
-  const [loading, setLoading] = useState(true); // 로딩 상태
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const currentUser = auth.currentUser; // 현재 로그인한 사용자
-      if (!currentUser) {
-        console.error("로그인되지 않은 사용자입니다.");
-=======
 import React, { useState, useEffect } from 'react';
 import { auth, database } from '../firebase';
 import { ref, onValue, off } from 'firebase/database';
@@ -35,47 +17,12 @@ const UserInfoPage = () => {
       if (!user) {
         console.log("로그인되지 않은 사용자입니다.");
         navigate('/login');
->>>>>>> parent of a802370 (241122-1)
         return;
       }
 
       console.log("현재 로그인된 사용자 UID:", user.uid);
 
       // 사용자 정보 가져오기
-<<<<<<< HEAD
-      try {
-        const userRef = ref(database, `users/${currentUser.uid}`);
-        const userSnapshot = await get(userRef);
-
-        if (userSnapshot.exists()) {
-          setUserInfo(userSnapshot.val());
-        } else {
-          console.error("사용자 정보를 찾을 수 없습니다.");
-        }
-
-        // 게시글 가져오기
-        const postsRef = query(
-          ref(database, "posts"),
-          orderByChild("userId"),
-          equalTo(currentUser.uid) // 현재 사용자의 UID와 일치하는 게시글만 가져오기
-        );
-
-        const postsSnapshot = await get(postsRef);
-        if (postsSnapshot.exists()) {
-          const posts = [];
-          postsSnapshot.forEach((childSnapshot) => {
-            posts.push({ id: childSnapshot.key, ...childSnapshot.val() });
-          });
-          setUserPosts(posts);
-        } else {
-          console.log("작성된 글이 없습니다.");
-        }
-      } catch (error) {
-        console.error("데이터 가져오기 중 오류 발생:", error);
-      } finally {
-        setLoading(false); // 로딩 상태 종료
-      }
-=======
       const userRef = ref(database, `users/${user.uid}`);
       const unsubscribeUserInfo = onValue(
         userRef,
@@ -118,7 +65,6 @@ const UserInfoPage = () => {
         off(userRef, 'value', unsubscribeUserInfo);
         off(postsRef, 'value', unsubscribeUserPosts);
       };
->>>>>>> parent of a802370 (241122-1)
     };
 
     fetchUserData();
