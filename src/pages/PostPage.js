@@ -1,17 +1,16 @@
-import React, { useState } from "react";
-import { ref, push } from "firebase/database";
-import { database, auth } from "../firebase";
-import { useNavigate } from "react-router-dom";
-import "./PostPage.css";
+import React, { useState } from 'react';
+import { ref, push } from 'firebase/database';
+import { database } from '../firebase'; // db 대신 database로 변경
+import './PostPage.css';
+
 
 const PostPage = () => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false); // 중복 제출 방지
-  const navigate = useNavigate();
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+<<<<<<< HEAD
 
     if (isSubmitting) {
       alert("이미 제출 중입니다. 잠시만 기다려주세요.");
@@ -73,7 +72,16 @@ const PostPage = () => {
         user2: postAuthorId,
         user2Name: postAuthorName || "상대방",
       },
+=======
+    const postListRef = ref(database, 'posts/');
+    push(postListRef, {
+      title: title,
+      content: content,
+      timestamp: Date.now(),
+>>>>>>> parent of a802370 (241122-1)
     });
+    setTitle('');
+    setContent('');
   };
 
   return (
@@ -93,9 +101,7 @@ const PostPage = () => {
           placeholder="내용을 입력하세요"
           required
         />
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "작성 중..." : "작성하기"}
-        </button>
+        <button type="submit">작성하기</button>
       </form>
     </div>
   );
