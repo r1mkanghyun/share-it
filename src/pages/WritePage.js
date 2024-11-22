@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { db, auth } from "../firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { ref, push } from "firebase/database";
+import { database, auth } from "../firebase"; // Firebase Realtime Database 사용
 import "./WritePage.css";
 
 function WritePage() {
@@ -10,7 +10,7 @@ function WritePage() {
   const [suggestedPrice, setSuggestedPrice] = useState("");
   const [depositAmount, setDepositAmount] = useState("");
   const [image, setImage] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // 중복 제출 방지
   const navigate = useNavigate();
 
   const handleImageChange = (e) => {
@@ -49,18 +49,19 @@ function WritePage() {
         });
       }
 
-      const postData = {
+      const newPost = {
         title,
         content,
         suggestedPrice,
         depositAmount,
         imageBase64,
         userId: user.uid,
-        createdAt: serverTimestamp(),
+        createdAt: Date.now(), // Realtime Database는 UNIX timestamp 사용
       };
 
-      const docRef = await addDoc(collection(db, "posts"), postData);
-      console.log("게시글 저장 성공:", docRef.id, postData); // 디버깅용
+      const postRef = ref(database, "posts"); // Firebase Realtime Database 경로 설정
+      await push(postRef, newPost); // 데이터 저장
+      console.log("게시글 저장 성공:", newPost);
 
       alert("게시물이 성공적으로 작성되었습니다!");
       navigate("/"); // 메인 페이지로 이동

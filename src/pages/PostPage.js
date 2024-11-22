@@ -28,7 +28,8 @@ const PostPage = () => {
         return;
       }
 
-      const postListRef = ref(database, "posts/");
+      // posts 경로에 데이터 저장
+      const postRef = ref(database, "posts/");
       const newPost = {
         title,
         content,
@@ -36,11 +37,12 @@ const PostPage = () => {
         timestamp: Date.now(),
       };
 
-      await push(postListRef, newPost);
+      await push(postRef, newPost);
+      console.log("게시글 저장 성공:", newPost);
 
       alert("게시글이 성공적으로 작성되었습니다!");
-      setTitle(""); // 입력 필드 초기화
-      setContent("");
+      setTitle(""); // 제목 필드 초기화
+      setContent(""); // 내용 필드 초기화
       navigate("/"); // 메인 페이지로 이동
     } catch (error) {
       console.error("게시글 저장 중 오류 발생:", error);
