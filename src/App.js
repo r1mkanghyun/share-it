@@ -18,6 +18,7 @@ import Header from './components/Header';
 function App() {
   const [posts, setPosts] = useState([]);
 
+  // 게시글 가져오기
   useEffect(() => {
     const postsRef = collection(db, 'posts');
     const q = query(postsRef, orderBy('createdAt', 'desc'));
@@ -60,8 +61,8 @@ function App() {
         <Route path="/posts" element={<PostsListPage />} />
         <Route path="/posts/:id" element={<PostDetailPage />} />
         <Route path="/edit-post/:id" element={<EditPostPage />} />
-        <Route path="/chat" element={<ChatPage />} />
-        <Route path="/chatlist" element={<ChatListPage />} />
+        <Route path="/chatlist" element={<ChatListPage />} /> {/* 채팅방 목록 */}
+        <Route path="/chat/:chatId" element={<ChatPage />} /> {/* 채팅방 */}
         <Route path="/user-info" element={<UserInfoPage />} />
         <Route path="/write" element={<WritePage onPostSubmit={handlePostSubmit} />} />
       </Routes>
