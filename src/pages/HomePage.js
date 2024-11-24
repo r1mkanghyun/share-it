@@ -5,6 +5,7 @@ import './HomePage.css';
 function HomePage({ posts }) {
   const [searchQuery, setSearchQuery] = useState('');
 
+  // 검색어 필터링
   const filteredPosts = posts.filter((post) =>
     post.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -25,12 +26,9 @@ function HomePage({ posts }) {
           filteredPosts.map((post) => (
             <div key={post.id} className="post-item">
               <Link to={`/posts/${post.id}`} className="post-link">
-                {post.imageBase64 && (
-                  <img src={post.imageBase64} alt="물품 이미지" className="post-image" />
-                )}
                 <div className="post-details">
                   <h3>{post.title}</h3>
-                  <p>{post.content.slice(0, 50)}...</p>
+                  <p>{post.content.slice(0, 30)}...</p>
                 </div>
               </Link>
             </div>
