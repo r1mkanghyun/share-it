@@ -63,7 +63,7 @@ function App() {
         <Route path="/edit-post/:id" element={<EditPostPage />} />
         <Route path="/chatlist" element={<ChatListPage />} /> {/* 채팅방 목록 */}
         <Route path="/chat/:chatId" element={<ChatPage />} /> {/* 채팅방 */}
-        <Route path="/user-info" element={<UserInfoPage />} />
+        <Route path="/user-info" element={<UserInfoPage posts={posts} />} />
         <Route path="/write" element={<WritePage onPostSubmit={handlePostSubmit} />} />
       </Routes>
     </Router>

@@ -5,11 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { FaUserCircle } from 'react-icons/fa'; // 사용자 아이콘 추가
 import './UserInfoPage.css';
 
-const UserInfoPage = () => {
+const UserInfoPage = ({ posts }) => {
   const [userInfo, setUserInfo] = useState(null);
-  const [userPosts, setUserPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  const userPosts = posts.filter((post) => post.userId === auth.currentUser.uid);
 
   useEffect(() => {
     const fetchUserData = () => {
@@ -34,36 +35,16 @@ const UserInfoPage = () => {
             console.error("사용자 정보를 찾을 수 없습니다.");
             setUserInfo(null);
           }
+          setLoading(false);
         },
         (error) => {
           console.error("사용자 정보 가져오기 중 오류:", error);
         }
       );
 
-      // 사용자가 작성한 게시글 가져오기
-      const postsRef = ref(database, 'posts');
-      const unsubscribeUserPosts = onValue(
-        postsRef,
-        (snapshot) => {
-          const postsData = [];
-          snapshot.forEach((childSnapshot) => {
-            const post = childSnapshot.val();
-            if (post.userId === user.uid) {
-              postsData.push({ id: childSnapshot.key, ...post });
-            }
-          });
-          setUserPosts(postsData);
-          setLoading(false);
-        },
-        (error) => {
-          console.error("게시글 가져오기 중 오류:", error);
-        }
-      );
-
       // 컴포넌트 언마운트 시 이벤트 리스너 해제
       return () => {
         off(userRef, 'value', unsubscribeUserInfo);
-        off(postsRef, 'value', unsubscribeUserPosts);
       };
     };
 
